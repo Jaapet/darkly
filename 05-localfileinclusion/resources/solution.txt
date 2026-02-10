@@ -1,0 +1,6 @@
+http://192.168.56.102/?page=../../../../../../../etc/passwd
+"?page=" requests a specific page (file in folder in the server)
+by using a path from the active directory, we can request in other locations (ex: "?page=images/sky.jpg" - "images" folder, "sky.jpg" file)
+by using "../", we can go to parent directory, all the way up to the root of the server
+"/etc/passwd" is a standard file that exists on all linux systems, is readable by all users, and contains sensitive info (lists every user account on the system)
+-> we can read files on the server, like configuration files, source code, passwords
