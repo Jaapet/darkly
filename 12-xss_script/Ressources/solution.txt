@@ -1,0 +1,27 @@
+Context:
+XSS happens when the browser interprets user-controlled content.
+On /index.php?page=media&src=nsa, the src parameter is used as a media source, so I tested whether it could be made to load something other than an intended resource.
+
+Method:
+1. Test a Data URI (embedded content)
+    A Data URI directly embeds content (a common test when you control src):
+    data:text/plain,hello or data:text/html,<h1>hello</h1>
+    Result: “hello” is displayed → HTML is accepted/interpreted.
+
+2.Switch to base64
+    Raw HTML in a URL can break (<, >, etc.). Base64 is more stable.
+    echo -n '<h1>HELLO</h1>' | base64
+    PGgxPkhFTExPPC9oMT4= then test with:
+    data:text/html;base64,PGgxPkhFTExPPC9oMT4=
+    Result: “HELLO” is displayed.
+
+3.Demonstrate impact
+    I encoded HTML containing a script test:
+    echo -n '<script>test</script>' | base64
+    PHNjcmlwdD50ZXN0PC9zY3JpcHQ+ then injected it via src=data:text/html;base64,...
+    Result: flag obtained.
+
+Fix
+-Validate src using a strict allowlist.
+-Do not let users directly control a browser-loaded source.
+-Reinforce with a Content Security Policy (CSP).

@@ -1,0 +1,24 @@
+Context:
+When inspecting the main page HTML source, I noticed social links using an internal redirect endpoint:
+    index.php?page=redirect&site=facebook
+    index.php?page=redirect&site=twitter
+    index.php?page=redirect&site=instagram
+
+Method:
+    Replace the site parameter with an arbitrary value in the URL (e.g., ...page=redirect&site=sjkfnbsd).
+    It appears the destination is not properly validated, and the flag is displayed.
+
+Fix:
+1. Identifier-based redirects (recommended)
+    Never accept a raw URL from user input.
+    Input stays a key: site=facebook
+    Server uses a hardcoded mapping table, e.g.:
+    facebook -> https://facebook.com/...
+    twitter -> https://twitter.com/...
+    If the key is not in the table: return 400 or redirect to a safe fallback page.
+2.User-supplied redirect URLs 
+    Accept a URL parameter (e.g., next=https://...) only if it is strictly validated:
+    allow https only
+    enforce an exact-domain allowlist
+    reject IPs, localhost, unusual ports, @ in URLs, etc.
+    ex: OAuth return URLs.

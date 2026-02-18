@@ -1,0 +1,30 @@
+Context:
+To discover pages/directories not visible in the UI, I ran dirsearch (web content scanner):
+python3 dirsearch.py -u "http://192.168.56.101/"
+
+I identified robots.txt and read it:
+curl http://192.168.56.101/robots.txt
+
+It contains Disallow: /.hidden (hidden from crawlers, but still accessible).
+
+Method:
+
+1. Download /.hidden
+
+    mkdir ~/darkly_hidden
+    cd ~/darkly_hidden
+    wget -r -np -nH --cut-dirs=1 -e robots=off \
+    "http://192.168.56.101/.hidden/"
+
+2. Search for the flag
+Once the files are downloaded locally:
+grep -R "flag" .
+
+The flag is located at:
+http://192.168.56.101/.hidden/whtccjokayshttvxycsvykxcfm/igeemtxnvexvxezqwntmzjltkt/lmpanswobhwcozdqixbowvbrhw/
+
+
+Fix:
+-Don’t put sensitive paths in robots.txt: it is meant for crawling rules, not for “hiding” content.
+-If a directory must be private, enforce access controls (authentication + authorization).
+-Use strict file permissions.

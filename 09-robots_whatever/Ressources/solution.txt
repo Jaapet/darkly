@@ -1,0 +1,28 @@
+Context:
+Find “hidden” resources and highlight a bad security practice (credentials publicly accessible).
+
+Method:
+1.Retrieve /whatever
+    robots.txt mentions /whatever, so I downloaded the directory recursively:
+
+    mkdir ~/darkly_whatever
+    cd ~/darkly_whatever
+    wget -r -np -nH --cut-dirs=1 -e robots=off \
+    "http://192.168.56.101/whatever/"
+
+
+2. Find htpasswd
+    I found an htpasswd file containing:
+    root:437394baff5aa33daa618be47b75cb49
+    This is a username (root) plus an MD5 hash. The corresponding password is: qwerty123@.
+
+3. Admin login
+    The “general” login form did not work, but the real admin area is located at: /admin
+    Login with: username: root and password: qwerty123@
+    --> access granted + flag.
+
+Fix:
+-Never expose sensitive files in the webroot (including htpasswd, backups, dumps).
+-Protect internal areas with real authentication/authorization (not “hidden” via robots.txt).
+-Disable directory listing.
+-Store passwords using a modern, suitable hash (e.g., bcrypt/argon2) and enforce strong passwords.

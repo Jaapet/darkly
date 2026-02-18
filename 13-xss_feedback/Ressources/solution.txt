@@ -1,0 +1,17 @@
+Context:
+On /index.php?page=feedback, users can post a message and view other entries.
+After a page refresh, the message remains, so it is stored server-side. I then tested for possible HTML/JS injection.
+
+Method:
+    When inserting angle brackets <> in the name or message fields, anything between <...> is not displayed → HTML tags are being filtered.
+    As a result, <script> does not work either (removed/blocked).
+
+    By simply writing the word script (without angle brackets) in the name and/or message, the site returns the flag.
+    This looks like a server-side keyword detection (blacklist) rather than a real browser-executed XSS.
+
+Fix:
+- Do not use “script” keyword detection to prevent XSS.
+- Escape/encode user input on output (context-aware output encoding) so < and > are rendered as text, not interpreted as HTML.
+- If HTML must be allowed: use allowlist-based sanitizer (only safe tags/attributes)
+- Add a CSP to reduce impact if an injection slips through.
+- Enforce server-side authorization of behavior
