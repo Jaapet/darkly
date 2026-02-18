@@ -1,17 +1,19 @@
-Le cross-site scripting (XSS) est une tactique par laquelle un acteur malveillant injecte du code malveillant via un ou plusieurs scripts web dans un site web ou une web application légitime.
-Une Data URI, c’est une “URL” qui contient directement le contenu.
+Context:
 
+Le cross-site scripting (XSS) est une tactique par laquelle un acteur malveillant injecte du code malveillant via un ou plusieurs scripts web dans un site web ou une web application légitime.
+Sur /index.php?page=media&src=nsa, le paramètre src sert de “source” pour charger un contenu (média).
+L’idée est de voir si on peut lui faire charger autre chose qu’une ressource prévue.
+
+Tests effectués:
+
+On test une Data URI, c’est une “URL” qui contient directement le contenu. Classique
+Par exemple :
 data:text/html,<h1>hello</h1>
  ou data:text/plain,hello
 et on voit un hello qui s'affiche, donc le html est accepte
 
-base64 :parce que du HTML brut dans une URL contient des caractères pénibles (<, >, guillemets, espaces) qui peuvent être :
-
-cassés par l’URL encoding,
-filtrés,
-mal interprétés.
-En base64, on n'a plus ces caractères “dangereux” : juste A-Z a-z 0-9 + / =.
-
+Base64 :Le HTML brut dans une URL peut casser (caractères spéciaux, encodage, filtrage).
+En base64, la chaîne devient stable (caractères simples), donc plus fiable pour tester.
 
 on encode : echo -n '<h1>HELLO</h1>' | base64
 pon trouve PGgxPkhFTExPPC9oMT4=

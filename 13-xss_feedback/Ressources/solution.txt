@@ -1,0 +1,35 @@
+"Contexte"
+
+Sur la page /index.php?page=feedback, on peut écrire un avis (guestbook) et voir les avis des autres utilisateurs.
+J’ai commencé par vérifier le comportement de l’application :
+
+Quand on poste un message puis qu’on recharge la page, l’avis reste affiché : il est donc stocké côté serveur (ce n’est pas juste un affichage “en direct”).
+J’ai ensuite testé si mon contenu pouvait être interprété comme du HTML/JavaScript.
+
+"Tests effectués"
+
+- Injection de balises HTML : mettre des chevrons <> dans le champ name ou dans le champ message.
+    Résultat : dès que j’écris quelque chose du style <...>, la partie entre chevrons n’apparaît pas à l’affichage.
+    donc <script> ne passe pas non plus : la balise est bloquée/supprimée.
+
+À ce stade, on peut penser que le site tente de se protéger contre une XSS en empêchant l’injection de balises.
+
+
+"Découverte du flag:"
+
+Par hasard, j’ai écrit simplement le mot script (sans chevrons, donc sans balise HTML) dans le name et/ou le message.
+Résultat : le site renvoie directement le flag.
+
+Le fait que le flag apparaisse juste avec le mot “script”, même sans balise <script>, montre que le challenge ne vérifie probablement pas une “vraie XSS exécutée” dans le navigateur.
+Il s’agit plutôt d’une détection naïve côté serveur basée sur des mots-clés (par exemple : “si l’utilisateur écrit script, alors on considère qu’il a trouvé la faille”).
+Le flag est renvoyé parce que l’application détecte une tentative d’injection via un mot-clé, pas parce que du JavaScript a réellement été exécuté.
+
+"Erreur trouvée:"
+Blacklisting (bloquer le mot “script”) : c’est fragile et contournable.
+Ça ne couvre pas toutes les possibilités d’injection HTML/JS.
+Un vrai attaquant peut déclencher une XSS sans utiliser le mot exact “script”, ou via d’autres contextes HTML.
+
+"Comment l’éviter ?"
+- échapper/encoder correctement tout contenu utilisateur au moment de l’affichage (ex : convertir < en &lt;, > en &gt;)
+- utiliser une librairie de sanitization basée sur une allowlist si certains tags sont autorisés
+- renforcer avec une Content Security Policy (CSP)

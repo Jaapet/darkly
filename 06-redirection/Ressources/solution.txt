@@ -5,3 +5,5 @@ index.php?page=redirect&site=instagram
 
 donc dans l'URL, j'ai remplace cette redirection par : "http://192.168.56.101/index.php?page=redirect&site=sjkfnbsd"
 appremment, personne ne verifie vers quoi on redirige, le flag apparait.
+
+ATTENTION UNE SOLUTION POUSSEE EST DEMANDEE
