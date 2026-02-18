@@ -1,8 +1,10 @@
-confirm vulnerability
-- submit 1' : You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '\'' at line 1
-the syntax is broken. This means the server is vulnerable.
+The member search functionality (?page=member)
+directly concatenates user input into a SQL query without sanitization.
+This allows an attacker to manipulate the query structure to access unauthorized data.
 
-- 1 OR 1=1 : Input a "true" statement to see if it restores the page.
+
+confirm vulnerability
+- 1 OR 1=1 : Input a "true" statement to see what it shows (every user).
 ID: 1 OR 1=1 
 First name: one
 Surname : me
@@ -66,3 +68,8 @@ decrypt '5ff9d0165b4f92b14994e5c685cdce28' using https://md5decrypt.net
 hash 'fortytwo' using Sh256
 - echo -n fortytwo | shasum -a 256
 10a16d834f9b1e4068b25c4c46fe0284e99e44dceaf08098fc83925ba6310ff5
+
+
+Fix:
+- Prepared Statements: Use parameterized queries to separate code from data
+  (the input is treated like a simple string, not part of the query).

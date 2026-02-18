@@ -1,3 +1,14 @@
+The password recovery page (?page=recover) relies on a hidden HTML input field (<input type="hidden">)
+to specify the recipient email address for the reset code.
+
 http://192.168.56.102/?page=recover
-when inspected, the 'submit' button shows a 'mail' field with the admin's.
-when changed for our own, we get the flag.
+
+Method:
+- Used browser Developer Tools to inspect the form and identified a hidden input field named mail
+  containing a predefined email address (webmaster@borntosec.com).
+- Modified the value attribute of the hidden field to my own email address and submitted the form.
+- The server accepted the modified input and displayed the flag (simulating sending the recovery code to the new address).
+
+Fix:
+- Never trust sensitive data (like prices, IDs, or emails) submitted via hidden fields (preferably manage it in the backend).
+- Retrieve the user's email address directly from the backend database using a provided username, rather than accepting it from the form.

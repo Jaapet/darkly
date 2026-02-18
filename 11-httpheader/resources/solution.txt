@@ -1,3 +1,8 @@
+The specific page attempts to restrict access
+by checking the client's User-Agent and Referer HTTP headers.
+Since these headers are completely controlled by the client,
+they can be spoofed to bypass the restriction.
+
 http://192.168.56.102/?page=b7e44c7a40c5f80139f0a50f3650fb2bd8d00b0d24667c4c2ca32c88e13b758f
 borntosec link in the footer
 when inspected, the page shows 2 interesting comments:
@@ -6,3 +11,14 @@ when inspected, the page shows 2 interesting comments:
 
 we use curl to get the page content, with modified http header (-A to specify user-agent: browser/os) (--referer to specify from wher we come from)
 curl -s -A 'ft_bornToSec' --referer "https://www.nsa.gov/" "http://192.168.56.102/?page=b7e44c7a40c5f80139f0a50f3650fb2bd8d00b0d24667c4c2ca32c88e13b758f" | grep "The flag is"
+
+Method:
+- Inspected the source code of the page and found HTML comments requiring a specific browser (ft_bornToSec) and origin (https://www.nsa.gov/).
+- Used curl to manually set these headers:
+  curl -s -A 'ft_bornToSec' --referer "https://www.nsa.gov/" "http://192.168.56.102/?page=b7e44c7a40c5f80139f0a50f3650fb2bd8d00b0d24667c4c2ca32c88e13b758f" | grep "The flag is"
+  (-A to specify user-agent: browser/os) (--referer to specify from wher we come from)
+- The server accepted the spoofed headers as valid authentication and returned the flag.
+
+Fix:
+- Never rely on client-side headers (like User-Agent or Referer) for access control or authentication.
+- Use proper server-side sessions, cookies, or tokens to verify user identity and permissions.

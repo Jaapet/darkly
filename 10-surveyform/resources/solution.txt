@@ -1,4 +1,13 @@
+The survey page (?page=survey) relies on client-side HTML attributes (<option value="...">) to define the score.
+The server processes the submitted value without verifying if it falls within the allowed range (1-10).
+
 http://192.168.56.102/?page=survey
-when inspected, the 'grade' selection shows a 'value' field.
-we can modify the values of the grade defaults, to get any amount.
-when doing that, we get the flag.
+
+Method:
+- Used Developer Tools to inspect the "grade" dropdown menu.
+- Edited the value attribute of an option to an arbitrary high number or a specific unauthorized value.
+- Submitted the form, bypassing the logic check and forcing the server to accept an impossible score, revealing the flag.
+
+Fix:
+- Implement server-side checks to ensure the input is an integer within the expected range.
+- Only accept values that match a predefined array of valid options.

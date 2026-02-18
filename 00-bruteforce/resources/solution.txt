@@ -1,0 +1,10 @@
+The login page (?page=signin) does not limit login attempts and transmits credentials via GET.
+This allows automated tools to guess passwords without restriction.
+
+Method:
+- Python script using requests to perform a dictionary attack on the 'admin' account.
+
+Fix:
+- Add timer between or on submissions.
+- Block IP addresses after 3-5 failed attempts.
+- Enforce strong passwords and implement CAPTCHA to stop automation.
