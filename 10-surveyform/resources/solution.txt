@@ -1,0 +1,4 @@
+http://192.168.56.102/?page=survey
+when inspected, the 'grade' selection shows a 'value' field.
+we can modify the values of the grade defaults, to get any amount.
+when doing that, we get the flag.
