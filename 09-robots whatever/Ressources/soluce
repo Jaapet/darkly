@@ -1,0 +1,12 @@
+mkdir ~/darkly_whatever
+cd ~/darkly_whatever
+
+wget -r -np -nH --cut-dirs=1 -e robots=off \
+"http://192.168.56.101/whatever/"
+
+on trouve un htpsswd, on l'ouvre et on voit "root:437394baff5aa33daa618be47b75cb49"
+On le decrypte avec MD5, le password est "querty123@"
+
+si on utilise le formulaire de connexion, ca ne fonctinne pas.
+En fouillant, on voit qu'on tombe sur un formulaire de connexion si on va sur /admin
+plus qu'a se connecter avec "root" et notre password decrypte "qwerty123@"

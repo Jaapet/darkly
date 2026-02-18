@@ -1,0 +1,72 @@
+je lance dirsearch pour qu'il teste tous les chemins possibles : python3 dirsearch.py -u "http://192.168.56.101/" 
+on voit un [12:32:35] 200 -    53B - /robots.txt
+Il fait partie d’un standard qui sert à donner des consignes aux robots d’indexation (Googlebot, Bingbot, etc.) : quoi explorer, quoi éviter, où trouver le sitemap.
+curl http://192.168.56.101/robots.txt
+
+on voit
+User-agent: *
+Disallow: /whatever
+Disallow: /.hidden 
+
+Ça  signale deux zones que le site préférerait que les robots n’indexent pas. C'est cache mais pas protege, donc ca peut valoir le coup de fouiller
+
+
+il y a pleins de readme a telecharger, j'ai fait : 
+cd ~
+mkdir darkly_hidden
+cd darkly_hidden
+
+wget -r -np -nH --cut-dirs=1 -R "index.html*" \
+http://192.168.56.101/.hidden/
+
+mais ca ne fonctionne pas, wget respecte robots.txt et ne va pas plus loin.
+wget lit http://site/robots.txt puis il applique ses règles (les lignes Disallow:) et évite de crawler certaines URLs dans ce cas, robots.txt dit :
+Disallow: /.hidden
+Donc wget se bloque lui-même et ne télécharge pas /.hidden/...
+
+Avec robots=off, je dis à wget :
+“ignore robots.txt”
+“continue la récursion même si c'est disallowed” :
+
+rm -rf ~/darkly_hidden
+mkdir ~/darkly_hidden
+cd ~/darkly_hidden
+wget -r -np -nH --cut-dirs=1 -e robots=off \
+"http://192.168.56.101/.hidden/"
+
+
+la ca telecharge tous les fichiers, plus qu'a faire : grep -R "flag" .
+le readme avec le flag est a l'adresse : http://192.168.56.101/.hidden/whtccjokayshttvxycsvykxcfm/igeemtxnvexvxezqwntmzjltkt/lmpanswobhwcozdqixbowvbrhw/
+
+ne pas merttre de chemins sensibles dans robots.txt
+utilise robots.txt uniquement pour le crawl (pages inutiles à indexer), pas pour “cacher”.
+
+SOLUTION:
+Ne jamais mettre un secret dans le webroot
+Le meilleur “fix” : le flag (ou tout secret) ne doit jamais être servi par le serveur web.
+
+Pas dans /var/www/html/...
+Pas dans un dossier accessible par HTTP, même “caché”
+Pas dans un backup sous /backup.zip, /.old/, etc.
+
+Règle : si c’est un secret, ça vit :
+dans un gestionnaire de secrets (Vault, AWS Secrets Manager, Docker secrets, Kubernetes secrets)
+dans des variables d’environnement
+dans un fichier hors webroot avec permissions strictes
+
+Si un répertoire doit être privé :
+authentification (login, Basic Auth, SSO, etc.)
+autorisation (rôles, ACL, IP allowlist selon le contexte)
+
+Exemples de stratégies correctes :
+
+un espace /admin protégé par session + rôle admin
+un espace /staging accessible uniquement depuis le VPN / IP internes
+un partage interne protégé par Basic Auth (au minimum) si c’est temporaire
+
+Sur un vrai site, on évite :
+
+dossiers old/, backup/, .hidden/, dumps, logs web accessibles
+on net des per;issions strictes sur fichiers(pas chmod 777)
+
+robots.txt n’est pas une barrière : la vraie protection, c’est ne pas exposer les secrets + contrôles d’accès + pas de listing + hygiène de déploiement.
