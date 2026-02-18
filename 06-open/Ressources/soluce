@@ -1,0 +1,7 @@
+quand on regarde le code HTML de la page principale, on voit des redirections :
+index.php?page=redirect&site=facebook
+index.php?page=redirect&site=twitter
+index.php?page=redirect&site=instagram
+
+donc dans l'URL, j'ai remplace cette redirection par : "http://192.168.56.101/index.php?page=redirect&site=sjkfnbsd"
+appremment, personne ne verifie vers quoi on redirige, le flag apparait.
