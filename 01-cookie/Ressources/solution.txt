@@ -1,3 +1,13 @@
-aller chercher cookies -->  vue --> devrypt la value = false
-encrypt = true, on remplace cette valeur par la true value b326b5062b2f0e69046810717534cb09
-on recharge la page et ca nous co en admin
+Context:
+Browse the page and inspect cookies in the browser.
+
+Method: 
+I observed a value that looks like an MD5 hash.
+By comparing values, it appears the site likely checks something like: “if the cookie equals MD5('true'), then the user is admin; otherwise, non-admin.”
+After replacing the cookie value with the one corresponding to true and reloading the page, access switches to admin.
+
+Fix:
+-Store roles/permissions server-side; cookie should be an opaque session ID only.
+-Add integrity if data must be client-side: Use a server-secret signature.
+-Set cookies: HttpOnly, Secure, SameSite (helps, but doesn’t fix integrity).
+-Enforce server-side authorization checks on every admin page/action.
